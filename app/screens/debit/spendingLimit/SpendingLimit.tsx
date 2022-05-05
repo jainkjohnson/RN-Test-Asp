@@ -1,26 +1,36 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {Header} from '../../../components/header/Header/Header';
-import {NavigatorParamList} from '../../../navigators/Routes';
+import {NavigatorParamList, RouteNames} from '../../../navigators/Routes';
 import SmallLimitIcon from '../../../../assets/icons/SmallLimit.svg';
 import styles from './Styles';
 import {InputText} from '../../../components/inputText/InputText';
 import {AmountPicker} from '../../../components/amountPicker/AmountPicker';
 import {Button} from '../../../components/button/Button';
+import {AppDispatch} from '../../../../App';
+import {useDispatch} from 'react-redux';
+import {updateWeeklyLimit} from '../../../redux/actions/debitDetails';
+import {RouteProp} from '@react-navigation/native';
 
 interface Props {
   navigation: NativeStackNavigationProp<NavigatorParamList>;
+  route: RouteProp<NavigatorParamList, RouteNames.SPENDING_LIMIT>;
 }
 
 export const SpendingLimit: React.FC<Props> = props => {
-  const {navigation} = props;
+  const {navigation, route} = props;
   const [amount, setAmount] = useState<string>();
+  const dispatch: AppDispatch = useDispatch();
 
   function handleBack() {
     navigation.goBack();
   }
+
+  useEffect(() => {
+    setAmount(route.params.amount.toString());
+  }, [route.params.amount]);
 
   function handleAmount(amount: number): void {
     setAmount(amount.toString());
@@ -28,6 +38,13 @@ export const SpendingLimit: React.FC<Props> = props => {
 
   function handleTextChange(amount: string) {
     setAmount(amount);
+  }
+
+  function handleSave() {
+    if (amount !== undefined) {
+      dispatch(updateWeeklyLimit(parseInt(amount, 10)));
+      navigation.goBack();
+    }
   }
 
   return (
@@ -59,7 +76,7 @@ export const SpendingLimit: React.FC<Props> = props => {
           </View>
         </View>
 
-        <Button text="Save" onPress={() => null} disabled={!amount} />
+        <Button text="Save" onPress={handleSave} disabled={!amount} />
       </View>
     </View>
   );

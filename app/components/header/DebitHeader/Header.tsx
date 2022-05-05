@@ -17,7 +17,7 @@ export const Header: React.FC<Props> = props => {
     <View style={Styles.headerContainer}>
       <View>
         <Text style={Styles.headerTitle}>{title}</Text>
-        <Text style={Styles.availableBalance}>Available Balance</Text>
+        <Text style={Styles.availableBalance}>Available balance</Text>
         <View style={Styles.balanceContainer}>
           <CurrencyUnit />
           <Text style={Styles.balance}>{balance}</Text>

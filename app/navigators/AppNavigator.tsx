@@ -6,15 +6,37 @@ import {Debit} from '../screens/debit/Debit';
 import {Home} from '../screens/home/Home';
 import {SpendingLimit} from '../screens/debit/spendingLimit/SpendingLimit';
 import {RouteNames} from './Routes';
+import {IconSVG} from '../components/iconSVG/IconSVG';
+import CardIcon from '../../assets/icons/Card.svg';
+import HomeIcon from '../../assets/icons/Home.svg';
+import {Palette} from '../theme/Palatte';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabStack() {
   return (
-    <Tab.Navigator screenOptions={{headerShown: false}}>
-      <Tab.Screen name={RouteNames.DEBIT} component={Debit} />
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          if (route.name === RouteNames.DEBIT) {
+            if (focused) {
+              return <IconSVG svgComponent={CardIcon} />;
+            }
+            return <IconSVG svgComponent={CardIcon} color={Palette.grey} />;
+          } else if (route.name === RouteNames.HOME) {
+            if (focused) {
+              return <IconSVG svgComponent={HomeIcon} />;
+            }
+            return <IconSVG svgComponent={HomeIcon} color={Palette.grey} />;
+          }
+        },
+        headerShown: false,
+        tabBarActiveTintColor: Palette.green,
+        tabBarInactiveTintColor: Palette.darkGrey,
+      })}>
       <Tab.Screen name={RouteNames.HOME} component={Home} />
+      <Tab.Screen name={RouteNames.DEBIT} component={Debit} />
     </Tab.Navigator>
   );
 }

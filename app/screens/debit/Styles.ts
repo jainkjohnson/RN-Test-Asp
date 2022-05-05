@@ -18,7 +18,27 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Spacings.large,
   },
   debitCardContainer: {
-    marginBottom: 34,
+    marginBottom: Spacings.large,
+  },
+  progressBar: {},
+  progressBarContainer: {
+    marginHorizontal: Spacings.large,
+    marginBottom: 32,
+  },
+  amountContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  debitLimitText: {
+    fontSize: 13,
+    fontFamily: 'AvenirNextLTPro-Regular',
+  },
+  debitLimitSpendAmount: {
+    color: Palette.green,
+  },
+  debitLimitAmount: {
+    color: Palette.grey,
   },
 });
 

@@ -13,10 +13,18 @@ interface Props {
   description: string;
   toggleButtonValue?: boolean;
   onPress: () => void;
+  onPressToggleButton?: () => void;
 }
 
 export const Menu: React.FC<Props> = props => {
-  const {icon, title, description, toggleButtonValue, onPress} = props;
+  const {
+    icon,
+    title,
+    description,
+    toggleButtonValue,
+    onPress,
+    onPressToggleButton,
+  } = props;
   return (
     <TouchableOpacity style={Styles.rootContainer} onPress={onPress}>
       <View style={Styles.iconContainer}>
@@ -26,7 +34,9 @@ export const Menu: React.FC<Props> = props => {
         <Text style={Styles.title}>{title}</Text>
         <Text style={Styles.description}>{description}</Text>
       </View>
-      <View style={Styles.toggleContainer}>
+      <TouchableOpacity
+        style={Styles.toggleContainer}
+        onPress={onPressToggleButton}>
         {toggleButtonValue !== undefined ? (
           toggleButtonValue ? (
             <ToggleButtonOn />
@@ -34,7 +44,7 @@ export const Menu: React.FC<Props> = props => {
             <ToggleButtonOff />
           )
         ) : null}
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };

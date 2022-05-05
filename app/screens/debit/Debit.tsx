@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, ScrollView} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack/lib/typescript/src/types';
+import {useDispatch, useSelector} from 'react-redux';
 
 import {DebitCard} from '../../components/debitCard/DebitCard';
 import {Header} from '../../components/header/DebitHeader/Header';
@@ -13,6 +14,14 @@ import FreezeIcon from '../../../assets/icons/Freeze.svg';
 import DeactivateIcon from '../../../assets/icons/Deactivate.svg';
 import {NavigatorParamList, RouteNames} from '../../navigators/Routes';
 import {cardFormat} from '../../utils/utilFunctions';
+import {RootState} from '../../redux/reducers';
+import {
+  getDebitDetails,
+  updateWeeklyLimit,
+} from '../../redux/actions/debitDetails';
+import {AppDispatch, useAppDispatch} from '../../../App';
+import {DebitDetails} from '../../redux/reducers/debitDetails';
+import {ProgressBar} from '../../components/progressBar/ProgressBar';
 
 interface Props {
   navigation: NativeStackNavigationProp<NavigatorParamList>;
@@ -20,14 +29,41 @@ interface Props {
 
 export const Debit: React.FC<Props> = props => {
   const {navigation} = props;
+  const dispatch: AppDispatch = useDispatch();
+  const details = useSelector((state: RootState) => state.debitDetailsStore);
+  const [debitDetails, setDebitDetails] = useState<DebitDetails>(
+    details.debitDetails,
+  );
+
+  useEffect(() => {
+    dispatch(getDebitDetails());
+  }, []);
+
+  useEffect(() => {
+    setDebitDetails(details.debitDetails);
+  }, [details]);
 
   function handleSpendingLimit() {
-    navigation.push(RouteNames.SPENDING_LIMIT);
+    navigation.push(RouteNames.SPENDING_LIMIT, {
+      amount: details.debitDetails.weeklyLimit,
+    });
+  }
+
+  function handlePercentage(): number {
+    return (
+      (details.debitDetails.amountSpendAmount /
+        details.debitDetails.weeklyLimit) *
+      100
+    );
+  }
+
+  function handleLimitToggleButton() {
+    dispatch(updateWeeklyLimit(parseInt('0', 10)));
   }
 
   return (
     <View style={Styles.rootContainer}>
-      <Header title="Debit Card" balance={3000} />
+      <Header title="Debit Card" balance={debitDetails.availableBalance} />
       <ScrollView bounces={false} contentContainerStyle={{bottom: -90}}>
         <View style={Styles.transparentSection}></View>
 
@@ -35,13 +71,37 @@ export const Debit: React.FC<Props> = props => {
           <View style={{top: -90}}>
             <DebitCard
               showCardDetails={true}
-              cardHolderName="Jain"
-              cardNumber={cardFormat('1234567812345678')}
-              expireMonth={12}
-              expireYear={20}
-              cvv={277}
+              cardHolderName={debitDetails.name}
+              cardNumber={cardFormat(debitDetails.cardNumber)}
+              expireMonth={debitDetails.expireMonth}
+              expireYear={debitDetails.expireYear}
+              cvv={debitDetails.cvv}
               style={Styles.debitCardContainer}
             />
+            {!!debitDetails.weeklyLimit ? (
+              <View style={Styles.progressBarContainer}>
+                <View style={Styles.amountContainer}>
+                  <Text style={Styles.debitLimitText}>
+                    Debit card spending limit
+                  </Text>
+                  <Text
+                    style={[
+                      Styles.debitLimitText,
+                      Styles.debitLimitSpendAmount,
+                    ]}>
+                    {`$${debitDetails.amountSpendAmount}`}
+                    <Text
+                      style={
+                        Styles.debitLimitAmount
+                      }>{` | $${debitDetails.weeklyLimit}`}</Text>
+                  </Text>
+                </View>
+                <ProgressBar
+                  percentage={handlePercentage()}
+                  style={Styles.progressBar}
+                />
+              </View>
+            ) : null}
             <Menu
               title="Top-up account"
               description="Deposit money to your account to use with card"
@@ -52,8 +112,9 @@ export const Debit: React.FC<Props> = props => {
               title="Weekly spending limit"
               description="You haven't set any spending limit on card"
               icon={LimitIcon}
-              toggleButtonValue={false}
+              toggleButtonValue={!!debitDetails.weeklyLimit}
               onPress={handleSpendingLimit}
+              onPressToggleButton={handleLimitToggleButton}
             />
             <Menu
               title="Freeze card"

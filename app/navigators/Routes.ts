@@ -6,5 +6,5 @@ export enum RouteNames {
 }
 
 export type NavigatorParamList = {
-  [RouteNames.SPENDING_LIMIT]: undefined;
+  [RouteNames.SPENDING_LIMIT]: {amount: number};
 };

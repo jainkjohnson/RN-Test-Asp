@@ -58,7 +58,11 @@ export const Debit: React.FC<Props> = props => {
   }
 
   function handleLimitToggleButton() {
-    dispatch(updateWeeklyLimit(parseInt('0', 10)));
+    if (!details.debitDetails.weeklyLimit) {
+      handleSpendingLimit();
+    } else {
+      dispatch(updateWeeklyLimit(parseInt('0', 10)));
+    }
   }
 
   return (

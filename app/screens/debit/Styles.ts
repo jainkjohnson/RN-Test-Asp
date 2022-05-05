@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     color: Palette.green,
   },
   debitLimitAmount: {
-    color: Palette.grey,
+    color: Palette.darkGrey,
   },
 });
 
